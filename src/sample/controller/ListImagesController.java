@@ -11,6 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import sample.Main;
+import sample.NeuralHopfield;
 
 
 public class ListImagesController {
@@ -28,8 +29,10 @@ public class ListImagesController {
     public Button restore;
 
 
-    private static final int WIDTH_RECTANGLE = 30;
-    private static final int COUNT_PIXEL = 15;
+    private static final int WIDTH_RECTANGLE = 45;
+    private static final int COUNT_PIXEL = 10;
+
+    private NeuralHopfield neuralHopfield;
 
     private Main main;
     private Rectangle[][] rec;
@@ -39,6 +42,8 @@ public class ListImagesController {
 
     @FXML
     public void initialize() {
+        neuralHopfield = new NeuralHopfield(COUNT_PIXEL * COUNT_PIXEL);
+
         clear.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -52,11 +57,13 @@ public class ListImagesController {
         restore.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                setIntValuesToGrid(neuralHopfield.execute(getDrawImageArray()));
             }
         });
         remember.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                neuralHopfield.learn(getDrawImageArray());
             }
         });
     }
@@ -138,8 +145,8 @@ public class ListImagesController {
 
         System.out.println("posX = " + posX + " posY = " + posY);
 
-        posX -= (posX / 15);
-        posY -= (posY / 15);
+        posX -= (posX / WIDTH_RECTANGLE);
+        posY -= (posY / WIDTH_RECTANGLE);
 
         int colX = (int) ((posX / WIDTH_RECTANGLE));
         int colY = (int) ((posY / WIDTH_RECTANGLE));
@@ -150,6 +157,35 @@ public class ListImagesController {
                 rec[colX][colY].setFill(Color.WHITE);
             } else {
                 rec[colX][colY].setFill(Color.RED);
+            }
+        }
+    }
+
+    private int[] getDrawImageArray() {
+        int[] result = new int[COUNT_PIXEL * COUNT_PIXEL];
+        int index = 0;
+        for (int i = 0; i < rec.length; i++) {
+            for (int j = 0; j < rec[i].length; j++) {
+                if (rec[i][j].getFill() == Color.RED) {
+                    result[index++] = 1;
+                } else {
+                    result[index++] = -1;
+                }
+            }
+        }
+        return result;
+    }
+
+    private void setIntValuesToGrid(int[] values) {
+
+        for (int i = 0; i < rec.length; i++) {
+            for (int j = 0; j < rec[i].length; j++) {
+                if(values[i * COUNT_PIXEL + j] == 1){
+                    rec[i][j].setFill(Color.RED);
+                }
+                else {
+                    rec[i][j].setFill(Color.WHITE);
+                }
             }
         }
     }

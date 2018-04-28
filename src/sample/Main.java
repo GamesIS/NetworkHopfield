@@ -17,12 +17,10 @@ public class Main extends Application {
     public static final String RESOURCES_PATH = new File("resources").getAbsolutePath();
     private Stage primaryStage;
     private BorderPane rootLayout;
-    private NeuralHopfield neuralHopfield;
+
     private ObservableList<Char> chars = FXCollections.observableArrayList();
 
     public Main() {
-        neuralHopfield = new NeuralHopfield();
-
     }
 
     public static void main(String[] args) {
@@ -61,7 +59,7 @@ public class Main extends Application {
         }
     }
 
-    public void showListImages(){
+    public void showListImages() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("listimages.fxml"));
@@ -71,12 +69,10 @@ public class Main extends Application {
 
             ListImagesController controller = loader.getController();
             controller.setMain(this);
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
 
     public Stage getPrimaryStage() {
